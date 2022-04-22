@@ -18,10 +18,7 @@ int main()
     {
         for (int j = 0; j < base.length(); j++)
         {
-            // if (i >= j - 4)
             opt[i][j] = 0;
-            // else
-            // opt[i][j] = -1;
         }
     }
     int ans = 0;
@@ -50,8 +47,6 @@ int pairup(int start, int end, string &base, vector<vector<int>> &opt, vector<in
                         int ans_paired = pairup(i, t - 1, base, opt, partner, global_partner) + pairup(t + 1, j - 1, base, opt, partner, global_partner);
                         if (maxt < ans_paired)
                         {
-                            // partner[partner[t]] = 0;
-                            // partner[partner[j]] = 0;
                             partner[t] = j;
                             partner[j] = t;
                             maxt = ans_paired;
