@@ -1,102 +1,30 @@
-#include <iostream>
-#include <vector>
+/// \headerfile rna.cpp
+/// \brief including rna cpp file.
+#include "rna.cpp"
+
+/// \namespace std
+/// \brief using standard namespace.
 using namespace std;
 
-int pairup(int i, int n, string &base, vector<vector<int>> &opt, vector<int> &partner, vector<int> &global_partner);
-int satisfyConds(int i, int j, string &base, vector<int> &partner);
-bool matches_base(char x, char y);
+/// \brief main function to drive the whole code.
+/// Takes RNA sequence as string input, and sends it to processing.
+/// Writes the result to a CSV file.
 int main()
 {
-    string base;
-    cout << "Enter your RNA base sequence in uppercase format:\n";
-    cin >> base;
-    cout << "Sequence Length: " << base.length() << "\n";
-    vector<int> partner(base.length() + 1, 0);
-    vector<int> global_partner(base.length() + 1, 0);
-    vector<vector<int>> opt(base.length() + 1, vector<int>(base.length() + 1));
-    for (int i = 0; i < base.length(); i++)
+    int total_lines;
+    cin >> total_lines;
+    ofstream results("results.txt");
+    for (int i = 0; i < total_lines; i++)
     {
-        for (int j = 0; j < base.length(); j++)
-        {
-            opt[i][j] = 0;
-        }
+        string base;
+        cin >> base;
+        cout << "RNA Sequence number " << i << ":\n";
+		cout << base << "\n";
+        cout << "Sequence Length: " << base.length() << "\n";
+        RNA myRNA = RNA(base);
+        myRNA.start_pairing();
+        cout << "------------------------------------------------------------\n";
+        results << myRNA.len << ", " << myRNA.base << ", " << myRNA.total_pairs << ", " << myRNA.time_taken << "\n";
     }
-    int ans = 0;
-    ans = pairup(1, base.length(), base, opt, partner, global_partner);
-    cout << "No. of pairs: " << ans << endl;
-}
-
-int pairup(int start, int end, string &base, vector<vector<int>> &opt, vector<int> &partner, vector<int> &global_partner)
-{
-    if ((start > 0) && (start < (base.length() - 4)) && (end > 5) && (end <= base.length()) && (start < (end - 4)))
-    {
-        for (int k = 5; k < end; k++)
-        {
-            for (int i = 0; i < (int)(partner.size()); i++)
-                partner[i] = 0;
-            for (int i = start; i <= end - k; i++)
-            {
-                int j = i + k;
-                int maxt = -1;
-                bool paired = false;
-                int t;
-                for (t = i; t < j - 4; t++)
-                {
-                    if (satisfyConds(t, j, base, partner) == 1)
-                    {
-                        int ans_paired = pairup(i, t - 1, base, opt, partner, global_partner) + pairup(t + 1, j - 1, base, opt, partner, global_partner);
-                        if (maxt < ans_paired)
-                        {
-                            partner[t] = j;
-                            partner[j] = t;
-                            maxt = ans_paired;
-                            paired = true;
-                        }
-                    }
-                }
-                if (paired)
-                {
-                    global_partner[t] = j;
-                    global_partner[j] = t;
-                    opt[i][j] = max(opt[i][j - 1], 1 + maxt);
-                }
-                else
-                {
-                    opt[i][j] = opt[i][j - 1];
-                }
-            }
-        }
-        return opt[start][end];
-    }
-    return 0;
-}
-
-int satisfyConds(int i, int j, string &base, vector<int> &partner)
-{
-    if (i > j - 4)
-    {
-        return 0;
-    }
-    else
-    {
-        if (matches_base(base[i - 1], base[j - 1]))
-        {
-            if (partner[i] == 0 && partner[j] == 0)
-                return 1;
-            else
-                return 0;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-}
-
-bool matches_base(char x, char y)
-{
-    if ((x == 'A' && y == 'U') || (x == 'U' && y == 'A') || (x == 'G' && y == 'C') || (x == 'C' && y == 'G'))
-        return true;
-    else
-        return false;
+    cout << "Results exported to file named results.txt in CSV format.";
 }

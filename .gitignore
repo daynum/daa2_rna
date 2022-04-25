@@ -1,3 +1,9 @@
 /.vscode
 /a.exe
 /main.exe
+/doc
+/submission
+*.zip
+Doxyfile
+*.dox
+*.md
